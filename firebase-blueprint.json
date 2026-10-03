@@ -1,0 +1,177 @@
+{
+  "entities": {
+    "WebsiteSettings": {
+      "title": "WebsiteSettings",
+      "description": "Global website configuration, creator branding, and contact info.",
+      "type": "object",
+      "properties": {
+        "siteName": { "type": "string" },
+        "siteNameKh": { "type": "string" },
+        "siteSubtitle": { "type": "string" },
+        "siteSubtitleKh": { "type": "string" },
+        "siteDescription": { "type": "string" },
+        "siteDescriptionKh": { "type": "string" },
+        "logoText": { "type": "string" },
+        "theme": { "type": "string" },
+        "creatorName": { "type": "string" },
+        "creatorNameKh": { "type": "string" },
+        "creatorRole": { "type": "string" },
+        "creatorRoleKh": { "type": "string" },
+        "creatorBio": { "type": "string" },
+        "creatorBioKh": { "type": "string" },
+        "creatorAvatar": { "type": "string" },
+        "heroTitle": { "type": "string" },
+        "heroTitleKh": { "type": "string" },
+        "heroSubtitle": { "type": "string" },
+        "heroSubtitleKh": { "type": "string" },
+        "heroDescription": { "type": "string" },
+        "heroDescriptionKh": { "type": "string" },
+        "heroImage": { "type": "string" },
+        "email": { "type": "string" },
+        "phone": { "type": "string" },
+        "address": { "type": "string" },
+        "telegramUsername": { "type": "string" },
+        "facebookUrl": { "type": "string" },
+        "githubUrl": { "type": "string" },
+        "linkedinUrl": { "type": "string" },
+        "aboutHeading": { "type": "string" },
+        "aboutHeadingKh": { "type": "string" },
+        "aboutText": { "type": "string" },
+        "aboutTextKh": { "type": "string" },
+        "footerText": { "type": "string" },
+        "footerTextKh": { "type": "string" },
+        "copyrightYear": { "type": "string" }
+      },
+      "required": ["siteName", "logoText"]
+    },
+    "Category": {
+      "title": "Category",
+      "description": "Academic semester or topic category for subjects.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "nameKh": { "type": "string" },
+        "slug": { "type": "string" },
+        "description": { "type": "string" },
+        "descriptionKh": { "type": "string" },
+        "icon": { "type": "string" },
+        "color": { "type": "string" },
+        "sortOrder": { "type": "number" },
+        "isActive": { "type": "boolean" },
+        "subjectsCount": { "type": "number" }
+      },
+      "required": ["id", "name", "slug"]
+    },
+    "Subject": {
+      "title": "Subject",
+      "description": "Core university course subject with curriculum metadata.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "nameKh": { "type": "string" },
+        "slug": { "type": "string" },
+        "description": { "type": "string" },
+        "descriptionKh": { "type": "string" },
+        "shortDescription": { "type": "string" },
+        "shortDescriptionKh": { "type": "string" },
+        "categoryId": { "type": "string" },
+        "categoryName": { "type": "string" },
+        "level": { "type": "string" },
+        "academicYear": { "type": "string" },
+        "semester": { "type": "string" },
+        "credits": { "type": "number" },
+        "lecturerName": { "type": "string" },
+        "lecturerTel": { "type": "string" },
+        "room": { "type": "string" },
+        "university": { "type": "string" },
+        "coverImage": { "type": "string" },
+        "icon": { "type": "string" },
+        "lessonsCount": { "type": "number" },
+        "isPublished": { "type": "boolean" },
+        "isFeatured": { "type": "boolean" },
+        "sortOrder": { "type": "number" },
+        "createdAt": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["id", "name", "slug", "categoryId"]
+    },
+    "Lesson": {
+      "title": "Lesson",
+      "description": "Structured lesson module belonging to a subject.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "subjectId": { "type": "string" },
+        "subjectSlug": { "type": "string" },
+        "subjectName": { "type": "string" },
+        "lessonNumber": { "type": "number" },
+        "title": { "type": "string" },
+        "titleKh": { "type": "string" },
+        "slug": { "type": "string" },
+        "duration": { "type": "string" },
+        "level": { "type": "string" },
+        "description": { "type": "string" },
+        "descriptionKh": { "type": "string" },
+        "content": { "type": "string" }
+      },
+      "required": ["id", "subjectId", "title", "lessonNumber"]
+    },
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "Registered user account profile.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "email": { "type": "string" },
+        "role": { "type": "string", "enum": ["admin", "student", "lecturer"] },
+        "username": { "type": "string" },
+        "avatar": { "type": "string" },
+        "isActive": { "type": "boolean" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["id", "email", "role"]
+    },
+    "UserProgress": {
+      "title": "UserProgress",
+      "description": "Student progress record for a subject.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "subjectId": { "type": "string" },
+        "progressPercent": { "type": "number" },
+        "lastVisitedLessonId": { "type": "string" },
+        "lastUpdated": { "type": "string" }
+      },
+      "required": ["userId", "subjectId"]
+    }
+  },
+  "firestore": {
+    "/settings/global": {
+      "schema": "WebsiteSettings",
+      "description": "Global website configuration and MECH MEN creator branding."
+    },
+    "/categories/{categoryId}": {
+      "schema": "Category",
+      "description": "Academic course categories and semesters."
+    },
+    "/subjects/{subjectId}": {
+      "schema": "Subject",
+      "description": "Core curriculum subjects."
+    },
+    "/subjects/{subjectId}/lessons/{lessonId}": {
+      "schema": "Lesson",
+      "description": "Lessons associated with a specific subject."
+    },
+    "/users/{userId}": {
+      "schema": "UserProfile",
+      "description": "User profiles and RBAC role assignments."
+    },
+    "/users/{userId}/progress/{subjectId}": {
+      "schema": "UserProgress",
+      "description": "Student learning progress for each subject."
+    }
+  }
+}

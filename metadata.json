@@ -1,0 +1,6 @@
+{
+  "name": "DevLearn IT Platform",
+  "description": "A modern, responsive IT Learning Web Application for students and beginners, featuring dynamic creator branding, interactive subject learning modules, embedded PDF & slide viewers, code playground, and complete admin management.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
