@@ -1,3 +1,6 @@
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import {
   initialSettings,
   initialCategories,
@@ -19,6 +22,10 @@ import {
   LearningProgress,
   Bookmark
 } from '../src/types/index.ts';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const PERSIST_FILE = path.resolve(__dirname, 'persistent-store.json');
 
 class DatabaseStore {
   public settings: WebsiteSettings;
@@ -72,6 +79,96 @@ class DatabaseStore {
     this.userPasswords = new Map();
     this.userPasswords.set("usr-admin-1", "admin123");
     this.userPasswords.set("usr-student-1", "student123");
+
+    // Load any persisted state from disk so server restarts never lose data
+    this.loadFromDisk();
+  }
+
+  public loadFromDisk() {
+    try {
+      if (fs.existsSync(PERSIST_FILE)) {
+        const raw = fs.readFileSync(PERSIST_FILE, 'utf-8');
+        const parsed = JSON.parse(raw);
+        if (parsed.settings && parsed.settings.siteName) {
+          this.settings = { ...this.settings, ...parsed.settings };
+        }
+        if (Array.isArray(parsed.categories) && parsed.categories.length > 0) {
+          this.categories = parsed.categories;
+        }
+        if (Array.isArray(parsed.subjects) && parsed.subjects.length > 0) {
+          this.subjects = parsed.subjects;
+        }
+        if (Array.isArray(parsed.lessons) && parsed.lessons.length > 0) {
+          this.lessons = parsed.lessons;
+        }
+        if (Array.isArray(parsed.materials) && parsed.materials.length > 0) {
+          this.materials = parsed.materials;
+        }
+        if (Array.isArray(parsed.users) && parsed.users.length > 0) {
+          this.users = parsed.users;
+        }
+        if (Array.isArray(parsed.progress)) {
+          this.progress = parsed.progress;
+        }
+        if (Array.isArray(parsed.bookmarks)) {
+          this.bookmarks = parsed.bookmarks;
+        }
+      }
+    } catch (err) {
+      console.warn('[DatabaseStore] Could not load persistent store file, using defaults:', err);
+    }
+  }
+
+  public saveToDisk() {
+    try {
+      const payload = {
+        settings: this.settings,
+        categories: this.categories,
+        subjects: this.subjects,
+        lessons: this.lessons,
+        materials: this.materials,
+        users: this.users,
+        progress: this.progress,
+        bookmarks: this.bookmarks,
+        updatedAt: new Date().toISOString()
+      };
+      fs.writeFileSync(PERSIST_FILE, JSON.stringify(payload, null, 2), 'utf-8');
+    } catch (err) {
+      console.warn('[DatabaseStore] Could not write persistent store file:', err);
+    }
+  }
+
+  public mergeCloudData(payload: {
+    settings?: Partial<WebsiteSettings>;
+    categories?: Category[];
+    subjects?: Subject[];
+    lessons?: Lesson[];
+    materials?: LessonMaterial[];
+  }) {
+    if (payload.settings && payload.settings.siteName) {
+      this.settings = { ...this.settings, ...payload.settings };
+    }
+    if (Array.isArray(payload.categories) && payload.categories.length > 0) {
+      const map = new Map(this.categories.map(c => [c.id, c]));
+      payload.categories.forEach(c => map.set(c.id, c));
+      this.categories = Array.from(map.values()).sort((a, b) => a.sortOrder - b.sortOrder);
+    }
+    if (Array.isArray(payload.subjects) && payload.subjects.length > 0) {
+      const map = new Map(this.subjects.map(s => [s.id, s]));
+      payload.subjects.forEach(s => map.set(s.id, s));
+      this.subjects = Array.from(map.values()).sort((a, b) => a.sortOrder - b.sortOrder);
+    }
+    if (Array.isArray(payload.lessons) && payload.lessons.length > 0) {
+      const map = new Map(this.lessons.map(l => [l.id, l]));
+      payload.lessons.forEach(l => map.set(l.id, l));
+      this.lessons = Array.from(map.values());
+    }
+    if (Array.isArray(payload.materials) && payload.materials.length > 0) {
+      const map = new Map(this.materials.map(m => [m.id, m]));
+      payload.materials.forEach(m => map.set(m.id, m));
+      this.materials = Array.from(map.values());
+    }
+    this.saveToDisk();
   }
 
   // --- Activity Logging ---
@@ -90,6 +187,7 @@ class DatabaseStore {
     if (this.activityLogs.length > 100) {
       this.activityLogs.pop();
     }
+    this.saveToDisk();
     return log;
   }
 
@@ -153,6 +251,7 @@ class DatabaseStore {
     };
     this.users.push(newUser);
     this.userPasswords.set(newId, pass);
+    this.saveToDisk();
     const token = `devlearn_token_${newId}_${Date.now()}`;
     return { user: newUser, token };
   }

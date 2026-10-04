@@ -846,22 +846,26 @@ export const SettingsManagement: React.FC = () => {
                   setSyncingCloud(true);
                   setCloudSyncSuccess(null);
                   try {
-                    const [subRes, catRes] = await Promise.all([
+                    const [subRes, catRes, lesRes, matRes] = await Promise.all([
                       api.getSubjects(),
-                      api.getCategories()
+                      api.getCategories(),
+                      api.getLessons(),
+                      api.getMaterials()
                     ]);
                     const result = await syncAllToGoogleFirestore(
                       subRes.data || [],
                       catRes.data || [],
-                      formData
+                      formData,
+                      lesRes.data || [],
+                      matRes.data || []
                     );
                     if (result.success) {
-                      setCloudSyncSuccess('All core subjects, categories, and settings have been synced to Google Cloud Datastore successfully!');
+                      setCloudSyncSuccess('រក្សាទុកជោគជ័យ! មុខវិជ្ជា មេរៀន ឯកសារ PDF និងការកំណត់ទាំងអស់ត្រូវបានរក្សាទុកក្នុង Google Cloud Firestore និងមិនបាត់បង់ពេល Hosting ឡើយ! (All subjects, lessons, PDFs, categories, and settings synced to Google Cloud!)');
                     } else {
-                      alert('Sync failed: ' + result.error);
+                      setCloudSyncSuccess('Sync notice: ' + result.error);
                     }
                   } catch (e: any) {
-                    alert('Error syncing to cloud: ' + e.message);
+                    setCloudSyncSuccess('Sync notice: ' + e.message);
                   } finally {
                     setSyncingCloud(false);
                   }

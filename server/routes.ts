@@ -1145,3 +1145,21 @@ apiRouter.get('/laravel-spec', (req: Request, res: Response) => {
     }
   });
 });
+
+// --------------------------------------------------------------------------
+// 15. CLOUD FIRESTORE & PERSISTENT STORE SYNCHRONIZATION
+// --------------------------------------------------------------------------
+apiRouter.post('/sync-from-cloud', (req: Request, res: Response) => {
+  const { settings, categories, subjects, lessons, materials } = req.body || {};
+  db.mergeCloudData({ settings, categories, subjects, lessons, materials });
+  res.json({
+    success: true,
+    message: 'Server state synchronized with Google Cloud Firestore',
+    data: {
+      subjectsCount: db.subjects.length,
+      lessonsCount: db.lessons.length,
+      categoriesCount: db.categories.length
+    }
+  });
+});
+

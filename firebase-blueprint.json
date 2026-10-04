@@ -118,6 +118,23 @@
       },
       "required": ["id", "subjectId", "title", "lessonNumber"]
     },
+    "LessonMaterial": {
+      "title": "LessonMaterial",
+      "description": "Downloadable or viewable PDF, slide deck, or source file.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "lessonId": { "type": "string" },
+        "subjectId": { "type": "string" },
+        "title": { "type": "string" },
+        "description": { "type": "string" },
+        "fileType": { "type": "string" },
+        "fileUrl": { "type": "string" },
+        "fileSize": { "type": "string" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["id", "title", "fileUrl"]
+    },
     "UserProfile": {
       "title": "UserProfile",
       "description": "Registered user account profile.",
@@ -149,7 +166,7 @@
     }
   },
   "firestore": {
-    "/settings/global": {
+    "/settings/{settingId}": {
       "schema": "WebsiteSettings",
       "description": "Global website configuration and MECH MEN creator branding."
     },
@@ -161,9 +178,13 @@
       "schema": "Subject",
       "description": "Core curriculum subjects."
     },
-    "/subjects/{subjectId}/lessons/{lessonId}": {
+    "/lessons/{lessonId}": {
       "schema": "Lesson",
-      "description": "Lessons associated with a specific subject."
+      "description": "All course lessons across subjects."
+    },
+    "/materials/{materialId}": {
+      "schema": "LessonMaterial",
+      "description": "Course materials, PDFs, and slides."
     },
     "/users/{userId}": {
       "schema": "UserProfile",
